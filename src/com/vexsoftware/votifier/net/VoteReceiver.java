@@ -25,13 +25,18 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.crypto.BadPaddingException;
+
 import org.bukkit.Bukkit;
 
 import com.vexsoftware.votifier.Votifier;
 import com.vexsoftware.votifier.crypto.RSA;
-import com.vexsoftware.votifier.model.*;
+import com.vexsoftware.votifier.model.Vote;
+import com.vexsoftware.votifier.model.VoteListener;
+import com.vexsoftware.votifier.model.VotifierEvent;
 
 /**
  * The vote receiving server.

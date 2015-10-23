@@ -1,10 +1,13 @@
 package com.vexsoftware.votifier.model;
 
 import java.io.File;
-import java.net.*;
-import java.util.*;
-import java.util.logging.*;
-import com.vexsoftware.votifier.Votifier;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Loads vote listeners. Listeners that cannot be instantiated will be skipped.
@@ -35,46 +38,44 @@ public class ListenerLoader {
 		}
 
 		// Load the vote listener instances.
-		ClassLoader loader;
-		try {
-			loader = new URLClassLoader(new URL[] { dir.toURI().toURL() },
-					VoteListener.class.getClassLoader());
-		} catch (MalformedURLException ex) {
-			LOG.log(Level.SEVERE,
-					"Error while configuring listener class loader", ex);
-			return listeners;
-		}
-		for (File file : dir.listFiles()) {
-			if (!file.getName().endsWith(".class")) {
-				continue; // Only load class files!
-			}
-			String name = file.getName().substring(0,
-					file.getName().lastIndexOf("."));
-
-			try {
-				Class<?> clazz = loader.loadClass(name);
-				Object object = clazz.newInstance();
-				if (!(object instanceof VoteListener)) {
-					LOG.info("Not a vote listener: " + clazz.getSimpleName());
-					continue;
+		try (URLClassLoader loader = new URLClassLoader(new URL[] { dir.toURI().toURL() }, VoteListener.class.getClassLoader()))
+		{
+			for (File file : dir.listFiles()) {
+				if (!file.getName().endsWith(".class")) {
+					continue; // Only load class files!
 				}
-				VoteListener listener = (VoteListener) object;
-				listeners.add(listener);
-				LOG.info("Loaded vote listener: "
-						+ listener.getClass().getSimpleName());
+				String name = file.getName().substring(0,
+						file.getName().lastIndexOf("."));
+
+				try {
+					Class<?> clazz = loader.loadClass(name);
+					Object object = clazz.newInstance();
+					if (!(object instanceof VoteListener)) {
+						LOG.info("Not a vote listener: " + clazz.getSimpleName());
+						continue;
+					}
+					VoteListener listener = (VoteListener) object;
+					listeners.add(listener);
+					LOG.info("Loaded vote listener: "
+							+ listener.getClass().getSimpleName());
+				}
+				/*
+				 * Catch the usual definition and dependency problems with a loader
+				 * and skip the problem listener.
+				 */
+				catch (Exception ex) {
+					LOG.log(Level.WARNING, "Error loading '" + name
+							+ "' listener! Listener disabled.");
+				} catch (Error ex) {
+					LOG.log(Level.WARNING, "Error loading '" + name
+							+ "' listener! Listener disabled.");
+				}
 			}
-			/*
-			 * Catch the usual definition and dependency problems with a loader
-			 * and skip the problem listener.
-			 */
-			catch (Exception ex) {
-				LOG.log(Level.WARNING, "Error loading '" + name
-						+ "' listener! Listener disabled.");
-			} catch (Error ex) {
-				LOG.log(Level.WARNING, "Error loading '" + name
-						+ "' listener! Listener disabled.");
-			}
+		} catch (IOException exception) {
+			LOG.log(Level.SEVERE,
+					"Error while configuring listener class loader", exception);
 		}
+
 		return listeners;
 	}
 }

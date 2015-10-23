@@ -123,7 +123,7 @@ public class VoteReceiver extends Thread {
 				InputStream in = socket.getInputStream();
 
 				// Send them our version.
-				writer.write("VOTIFIER " + Votifier.getInstance().getVersion());
+				writer.write("VOTIFIER " + this.plugin.getVersion());
 				writer.newLine();
 				writer.flush();
 

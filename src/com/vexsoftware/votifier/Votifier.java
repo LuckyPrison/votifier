@@ -64,13 +64,10 @@ public class Votifier extends UPlugin {
 		// Set the plugin version.
 		version = getDescription().getVersion();
 
-		// Handle configuration.
-		if (!getDataFolder().exists()) {
-			getDataFolder().mkdir();
-		}
 		FileConfiguration config = this.getConfig();
 		config.options().copyDefaults(true);
 		File rsaDirectory = new File(getDataFolder() + "/rsa");
+		this.saveConfig();
 
 		/*
 		 * Use IP address from server.properties as a default for

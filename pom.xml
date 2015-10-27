@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
   <artifactId>Votifier</artifactId>
+  <groupId>com.vexsoftware.votifier</groupId>
   <description>Vote management software</description>
 
   <parent>

@@ -7,7 +7,7 @@
    ###     #######     ##    #### ##       #### ######## ##     ##
 
 name: ${project.artifactId}
-main: com.vexsoftware.votifier.${project.artifactId}
+main: ${project.groupId}.${project.artifactId}
 version: ${project.version}
 authors: [blakeman8192, Kramer, ${project.author}]
 website: ${project.website}

@@ -22,7 +22,7 @@ import java.io.File;
 import java.security.KeyPair;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import com.ulfric.lib.plugin.UPlugin;
 import com.vexsoftware.votifier.crypto.RSAIO;
@@ -68,8 +68,8 @@ public class Votifier extends UPlugin {
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdir();
 		}
-		File config = new File(getDataFolder() + "/config.yml");
-		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(config);
+		FileConfiguration config = this.getConfig();
+		config.options().copyDefaults(true);
 		File rsaDirectory = new File(getDataFolder() + "/rsa");
 
 		/*
@@ -80,59 +80,29 @@ public class Votifier extends UPlugin {
 		 */
 		String hostAddr = Bukkit.getServer().getIp();
 		if (hostAddr == null || hostAddr.length() == 0)
+		{
 			hostAddr = "0.0.0.0";
-
-		/*
-		 * Create configuration file if it does not exists; otherwise, load it
-		 */
-		if (!config.exists()) {
-			try {
-				// First time run - do some initialization.
-				this.log("Configuring Votifier for the first time...");
-
-				// Initialize the configuration file.
-				config.createNewFile();
-
-				cfg.set("host", hostAddr);
-				cfg.set("port", 8192);
-				cfg.set("debug", false);
-
-				/*
-				 * Remind hosted server admins to be sure they have the right
-				 * port number.
-				 */
-				this.log("------------------------------------------------------------------------------");
-				this.log("Assigning Votifier to listen on port 8192. If you are hosting Craftbukkit on a");
-				this.log("shared server please check with your hosting provider to verify that this port");
-				this.log("is available for your use. Chances are that your hosting provider will assign");
-				this.log("a different port, which you need to specify in config.yml");
-				this.log("------------------------------------------------------------------------------");
-
-				cfg.save(config);
-			} catch (Exception ex) {
-				this.warn("Error creating configuration file");
-				this.log(ex);
-				gracefulExit();
-				return;
-			}
-		} else {
-			// Load configuration.
-			cfg = YamlConfiguration.loadConfiguration(config);
 		}
 
 		/*
 		 * Create RSA directory and keys if it does not exist; otherwise, read
 		 * keys.
 		 */
-		try {
-			if (!rsaDirectory.exists()) {
+		try
+		{
+			if (!rsaDirectory.exists())
+			{
 				rsaDirectory.mkdir();
 				keyPair = RSAKeygen.generate(2048);
 				RSAIO.save(rsaDirectory, keyPair);
-			} else {
+			}
+			else
+			{
 				keyPair = RSAIO.load(rsaDirectory);
 			}
-		} catch (Exception ex) {
+		}
+		catch (Exception ex)
+		{
 			this.warn("Error reading configuration file or RSA keys");
 			this.log(ex);
 			gracefulExit();
@@ -140,33 +110,32 @@ public class Votifier extends UPlugin {
 		}
 
 		// Initialize the receiver.
-		String host = cfg.getString("host", hostAddr);
-		int port = cfg.getInt("port", 8192);
-		debug = cfg.getBoolean("debug", false);
+		String host = config.getString("host", hostAddr);
+		int port = config.getInt("port", 8192);
+		debug = config.getBoolean("debug", false);
 		if (debug)
 		{
 			this.log("Debug enabled!");
 		}
 
-		try {
+		try
+		{
 			voteReceiver = new VoteReceiver(this, host, port);
 			voteReceiver.start();
-		} catch (Exception ex) {
-			gracefulExit();
-			return;
 		}
+		catch (Exception ex) { gracefulExit(); }
 	}
 
 	@Override
 	public void annihilate() {
 		// Interrupt the vote receiver.
-		if (voteReceiver != null) {
-			voteReceiver.shutdown();
-		}
-		this.log("Votifier disabled.");
+		if (voteReceiver == null) return;
+
+		voteReceiver.shutdown();
 	}
 
-	private void gracefulExit() {
+	private void gracefulExit()
+	{
 		this.warn("Votifier did not initialize properly!");
 	}
 

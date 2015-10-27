@@ -18,10 +18,13 @@
 
 package com.vexsoftware.votifier.model;
 
+import com.ulfric.lib.util.string.Strings;
+
 /**
  * A model for a vote.
  * 
  * @author Blake Beaupain
+ * @author Adam 'Packet' Edwards
  */
 public class Vote {
 
@@ -35,12 +38,14 @@ public class Vote {
 	private String address;
 
 	/** The date and time of the vote. */
+	// TODO check what this value actually is.
+	// If it's a time in millis, use a
+	// Timestamp object (included in Lib).
 	private String timeStamp;
 
 	@Override
 	public String toString() {
-		return "Vote (from:" + serviceName + " username:" + username
-				+ " address:" + address + " timeStamp:" + timeStamp + ")";
+		return Strings.format("Vote (from:$1 username:$2 address:$3 time:$4)", serviceName, username, address, timeStamp);
 	}
 
 	/**

@@ -25,17 +25,14 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.crypto.BadPaddingException;
 
-import org.bukkit.Bukkit;
-
+import com.ulfric.lib.task.Tasks;
+import com.ulfric.lib.util.server.Events;
 import com.vexsoftware.votifier.Votifier;
 import com.vexsoftware.votifier.crypto.RSA;
 import com.vexsoftware.votifier.model.Vote;
-import com.vexsoftware.votifier.model.VoteListener;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 /**
@@ -45,9 +42,6 @@ import com.vexsoftware.votifier.model.VotifierEvent;
  * @author Kramer Campbell
  */
 public class VoteReceiver extends Thread {
-
-	/** The logger instance. */
-	private static final Logger LOG = Logger.getLogger("Votifier");
 
 	private final Votifier plugin;
 
@@ -85,13 +79,10 @@ public class VoteReceiver extends Thread {
 			server = new ServerSocket();
 			server.bind(new InetSocketAddress(host, port));
 		} catch (Exception ex) {
-			LOG.log(Level.SEVERE,
-					"Error initializing vote receiver. Please verify that the configured");
-			LOG.log(Level.SEVERE,
-					"IP address and port are not already in use. This is a common problem");
-			LOG.log(Level.SEVERE,
-					"with hosting services and, if so, you should check with your hosting provider.",
-					ex);
+			plugin.warn("Error initializing vote receiver. Please verify that the configured");
+			plugin.warn("IP address and port are not already in use. This is a common problem");
+			plugin.warn("with hosting services and, if so, you should check with your hosting provider.");
+			plugin.log(ex);
 			throw new Exception(ex);
 		}
 	}
@@ -106,7 +97,7 @@ public class VoteReceiver extends Thread {
 		try {
 			server.close();
 		} catch (Exception ex) {
-			LOG.log(Level.WARNING, "Unable to shut down vote receiver cleanly.");
+			plugin.warn("Unable to shut down vote receiver cleanly.");
 		}
 	}
 
@@ -162,48 +153,26 @@ public class VoteReceiver extends Thread {
 				vote.setTimeStamp(timeStamp);
 
 				if (plugin.isDebug())
-					LOG.info("Received vote record -> " + vote);
-
-				// Dispatch the vote to all listeners.
-				for (VoteListener listener : Votifier.getInstance()
-						.getListeners()) {
-					try {
-						listener.voteMade(vote);
-					} catch (Exception ex) {
-						String vlName = listener.getClass().getSimpleName();
-						LOG.log(Level.WARNING,
-								"Exception caught while sending the vote notification to the '"
-										+ vlName + "' listener", ex);
-					}
-				}
+					plugin.debug("Received vote record -> " + vote);
 
 				// Call event in a synchronized fashion to ensure that the
 				// custom event runs in the
 				// the main server thread, not this one.
-				plugin.getServer().getScheduler()
-						.scheduleSyncDelayedTask(plugin, new Runnable() {
-							public void run() {
-								Bukkit.getServer().getPluginManager()
-										.callEvent(new VotifierEvent(vote));
-							}
-						});
+				Tasks.run(() -> Events.call(new VotifierEvent(vote)));
 
 				// Clean up.
 				writer.close();
 				in.close();
 				socket.close();
 			} catch (SocketException ex) {
-				LOG.log(Level.WARNING, "Protocol error. Ignoring packet - "
-						+ ex.getLocalizedMessage());
+				plugin.warn("Protocol error. Ignoring packet - " + ex.getLocalizedMessage());
 			} catch (BadPaddingException ex) {
-				LOG.log(Level.WARNING,
-						"Unable to decrypt vote record. Make sure that that your public key");
-				LOG.log(Level.WARNING,
-						"matches the one you gave the server list.", ex);
+				plugin.warn("Unable to decrypt vote record. Make sure that that your public key");
+				plugin.warn("matches the one you gave the server list.");
+				plugin.log(ex);
 			} catch (Exception ex) {
-				LOG.log(Level.WARNING,
-						"Exception caught while receiving a vote notification",
-						ex);
+				plugin.warn("Exception caught while receiving a vote notification");
+				plugin.log(ex);
 			}
 		}
 	}

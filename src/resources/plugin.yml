@@ -8,8 +8,9 @@
 
 name: ${project.artifactId}
 main: ${project.groupId}.${project.artifactId}
-version: ${project.version}
+version: 1.9
 authors: [blakeman8192, Kramer, ${project.author}]
 website: ${project.website}
 database: false
 description: ${project.description}
+depend: [Lib]

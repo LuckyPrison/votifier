@@ -20,19 +20,13 @@ package com.vexsoftware.votifier;
 
 import java.io.File;
 import java.security.KeyPair;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import com.ulfric.lib.plugin.UPlugin;
 import com.vexsoftware.votifier.crypto.RSAIO;
 import com.vexsoftware.votifier.crypto.RSAKeygen;
-import com.vexsoftware.votifier.model.ListenerLoader;
-import com.vexsoftware.votifier.model.VoteListener;
 import com.vexsoftware.votifier.net.VoteReceiver;
 
 /**
@@ -40,23 +34,15 @@ import com.vexsoftware.votifier.net.VoteReceiver;
  * 
  * @author Blake Beaupain
  * @author Kramer Campbell
+ * @author Adam 'Packet' Edwards
  */
-public class Votifier extends JavaPlugin {
-
-	/** The logger instance. */
-	private static final Logger LOG = Logger.getLogger("Votifier");
-
-	/** Log entry prefix */
-	private static final String logPrefix = "[Votifier] ";
+public class Votifier extends UPlugin {
 
 	/** The Votifier instance. */
 	private static Votifier instance;
 
 	/** The current Votifier version. */
 	private String version;
-
-	/** The vote listeners. */
-	private final List<VoteListener> listeners = new ArrayList<VoteListener>();
 
 	/** The vote receiver. */
 	private VoteReceiver voteReceiver;
@@ -67,17 +53,14 @@ public class Votifier extends JavaPlugin {
 	/** Debug mode flag */
 	private boolean debug;
 
-	/**
-	 * Attach custom log filter to logger.
-	 */
-	static {
-		LOG.setFilter(new LogFilter(logPrefix));
+	@Override
+	public void onLoad()
+	{
+		Votifier.instance = this;
 	}
 
 	@Override
 	public void onEnable() {
-		Votifier.instance = this;
-
 		// Set the plugin version.
 		version = getDescription().getVersion();
 
@@ -88,9 +71,6 @@ public class Votifier extends JavaPlugin {
 		File config = new File(getDataFolder() + "/config.yml");
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(config);
 		File rsaDirectory = new File(getDataFolder() + "/rsa");
-		// Replace to remove a bug with Windows paths - SmilingDevil
-		String listenerDirectory = getDataFolder().toString()
-				.replace("\\", "/") + "/listeners";
 
 		/*
 		 * Use IP address from server.properties as a default for
@@ -108,7 +88,7 @@ public class Votifier extends JavaPlugin {
 		if (!config.exists()) {
 			try {
 				// First time run - do some initialization.
-				LOG.info("Configuring Votifier for the first time...");
+				this.log("Configuring Votifier for the first time...");
 
 				// Initialize the configuration file.
 				config.createNewFile();
@@ -121,17 +101,17 @@ public class Votifier extends JavaPlugin {
 				 * Remind hosted server admins to be sure they have the right
 				 * port number.
 				 */
-				LOG.info("------------------------------------------------------------------------------");
-				LOG.info("Assigning Votifier to listen on port 8192. If you are hosting Craftbukkit on a");
-				LOG.info("shared server please check with your hosting provider to verify that this port");
-				LOG.info("is available for your use. Chances are that your hosting provider will assign");
-				LOG.info("a different port, which you need to specify in config.yml");
-				LOG.info("------------------------------------------------------------------------------");
+				this.log("------------------------------------------------------------------------------");
+				this.log("Assigning Votifier to listen on port 8192. If you are hosting Craftbukkit on a");
+				this.log("shared server please check with your hosting provider to verify that this port");
+				this.log("is available for your use. Chances are that your hosting provider will assign");
+				this.log("a different port, which you need to specify in config.yml");
+				this.log("------------------------------------------------------------------------------");
 
-				cfg.set("listener_folder", listenerDirectory);
 				cfg.save(config);
 			} catch (Exception ex) {
-				LOG.log(Level.SEVERE, "Error creating configuration file", ex);
+				this.warn("Error creating configuration file");
+				this.log(ex);
 				gracefulExit();
 				return;
 			}
@@ -147,35 +127,30 @@ public class Votifier extends JavaPlugin {
 		try {
 			if (!rsaDirectory.exists()) {
 				rsaDirectory.mkdir();
-				new File(listenerDirectory).mkdir();
 				keyPair = RSAKeygen.generate(2048);
 				RSAIO.save(rsaDirectory, keyPair);
 			} else {
 				keyPair = RSAIO.load(rsaDirectory);
 			}
 		} catch (Exception ex) {
-			LOG.log(Level.SEVERE,
-					"Error reading configuration file or RSA keys", ex);
+			this.warn("Error reading configuration file or RSA keys");
+			this.log(ex);
 			gracefulExit();
 			return;
 		}
-
-		// Load the vote listeners.
-		listenerDirectory = cfg.getString("listener_folder");
-		listeners.addAll(ListenerLoader.load(listenerDirectory));
 
 		// Initialize the receiver.
 		String host = cfg.getString("host", hostAddr);
 		int port = cfg.getInt("port", 8192);
 		debug = cfg.getBoolean("debug", false);
 		if (debug)
-			LOG.info("DEBUG mode enabled!");
+		{
+			this.log("Debug enabled!");
+		}
 
 		try {
 			voteReceiver = new VoteReceiver(this, host, port);
 			voteReceiver.start();
-
-			LOG.info("Votifier enabled.");
 		} catch (Exception ex) {
 			gracefulExit();
 			return;
@@ -183,16 +158,16 @@ public class Votifier extends JavaPlugin {
 	}
 
 	@Override
-	public void onDisable() {
+	public void annihilate() {
 		// Interrupt the vote receiver.
 		if (voteReceiver != null) {
 			voteReceiver.shutdown();
 		}
-		LOG.info("Votifier disabled.");
+		this.log("Votifier disabled.");
 	}
 
 	private void gracefulExit() {
-		LOG.log(Level.SEVERE, "Votifier did not initialize properly!");
+		this.warn("Votifier did not initialize properly!");
 	}
 
 	/**
@@ -211,15 +186,6 @@ public class Votifier extends JavaPlugin {
 	 */
 	public String getVersion() {
 		return version;
-	}
-
-	/**
-	 * Gets the listeners.
-	 * 
-	 * @return The listeners
-	 */
-	public List<VoteListener> getListeners() {
-		return listeners;
 	}
 
 	/**
@@ -243,5 +209,6 @@ public class Votifier extends JavaPlugin {
 	public boolean isDebug() {
 		return debug;
 	}
+
 
 }

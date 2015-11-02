@@ -28,8 +28,8 @@ import java.net.SocketException;
 
 import javax.crypto.BadPaddingException;
 
-import com.ulfric.lib.task.Tasks;
 import com.ulfric.lib.util.server.Events;
+import com.ulfric.lib.util.task.Tasks;
 import com.vexsoftware.votifier.Votifier;
 import com.vexsoftware.votifier.crypto.RSA;
 import com.vexsoftware.votifier.model.Vote;

@@ -160,6 +160,8 @@ public class VoteReceiver extends Thread {
 				// the main server thread, not this one.
 				Tasks.run(() -> Events.call(new VotifierEvent(vote)));
 
+				
+
 				// Clean up.
 				writer.close();
 				in.close();

@@ -25,8 +25,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.ulfric.lib.plugin.UPlugin;
+import com.ulfric.luckyscript.lang.Scripts;
 import com.vexsoftware.votifier.crypto.RSAIO;
 import com.vexsoftware.votifier.crypto.RSAKeygen;
+import com.vexsoftware.votifier.listener.VoteListener;
 import com.vexsoftware.votifier.net.VoteReceiver;
 
 /**
@@ -121,6 +123,8 @@ public class Votifier extends UPlugin {
 			voteReceiver.start();
 		}
 		catch (Exception ex) { gracefulExit(); }
+
+		this.registerListener(new VoteListener(Scripts.getScript(config.getString("script"))));
 	}
 
 	@Override

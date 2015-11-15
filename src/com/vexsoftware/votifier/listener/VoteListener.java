@@ -43,7 +43,7 @@ public class VoteListener implements Listener {
 
 		OfflinePlayer player = PlayerUtils.getOffline(username);
 
-		if (player == null || !player.hasPlayedBefore()) return;
+		if (player == null || !PlayerUtils.hasPlayed(player)) return;
 
 		String path = "vote.service." + vote.getServiceName();
 

@@ -45,7 +45,7 @@ public class Vote {
 
 	@Override
 	public String toString() {
-		return Strings.format("Vote (from:$1 username:$2 address:$3 time:$4)", serviceName, username, address, timeStamp);
+		return Strings.format("Vote (from:{0} username:{1} address:{2} time:{3})", serviceName, username, address, timeStamp);
 	}
 
 	/**

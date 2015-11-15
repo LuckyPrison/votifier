@@ -55,7 +55,7 @@ public class VoteListener implements Listener {
 
 		if (current - lastVote < Milliseconds.fromHours(23))
 		{
-			Votifier.getInstance().warn(Strings.format("Tried to process vote to $1 from $2 at time $3.", username, vote.getServiceName(), current - lastVote));
+			Votifier.getInstance().warn(Strings.format("Tried to process vote to {0} from {1} at time {2}.", username, vote.getServiceName(), current - lastVote));
 
 			return;
 		}

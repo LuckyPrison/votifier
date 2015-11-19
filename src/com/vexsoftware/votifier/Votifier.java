@@ -56,13 +56,13 @@ public class Votifier extends UPlugin {
 	private boolean debug;
 
 	@Override
-	public void onLoad()
+	public void load()
 	{
 		Votifier.instance = this;
 	}
 
 	@Override
-	public void onEnable() {
+	public void enable() {
 		// Set the plugin version.
 		version = getDescription().getVersion();
 
@@ -130,9 +130,12 @@ public class Votifier extends UPlugin {
 	@Override
 	public void annihilate() {
 		// Interrupt the vote receiver.
-		if (voteReceiver == null) return;
+		if (voteReceiver != null)
+		{
+			voteReceiver.shutdown();
+		}
 
-		voteReceiver.shutdown();
+		Votifier.instance = null;
 	}
 
 	private void gracefulExit()

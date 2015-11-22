@@ -24,8 +24,8 @@ import java.security.KeyPair;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import com.ulfric.lib.hook.Hooks;
 import com.ulfric.lib.plugin.UPlugin;
-import com.ulfric.luckyscript.lang.Scripts;
 import com.vexsoftware.votifier.crypto.RSAIO;
 import com.vexsoftware.votifier.crypto.RSAKeygen;
 import com.vexsoftware.votifier.listener.VoteListener;
@@ -124,7 +124,7 @@ public class Votifier extends UPlugin {
 		}
 		catch (Exception ex) { gracefulExit(); }
 
-		this.registerListener(new VoteListener(Scripts.getScript(config.getString("script"))));
+		this.registerListener(new VoteListener(Hooks.SCRIPT.getScript(config.getString("script"))));
 	}
 
 	@Override

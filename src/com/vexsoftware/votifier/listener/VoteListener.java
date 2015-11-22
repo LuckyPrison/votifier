@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 import com.ulfric.data.coll.DataColl;
+import com.ulfric.lib.hook.ScriptHook.Script;
 import com.ulfric.lib.plugin.Listener;
 import com.ulfric.lib.util.java.collect.CollectionUtils;
 import com.ulfric.lib.util.player.Locale;
@@ -16,7 +17,6 @@ import com.ulfric.lib.util.string.Strings;
 import com.ulfric.lib.util.task.Tasks;
 import com.ulfric.lib.util.time.Milliseconds;
 import com.ulfric.lib.util.time.TimeUtils;
-import com.ulfric.luckyscript.lang.Script;
 import com.vexsoftware.votifier.Votifier;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;

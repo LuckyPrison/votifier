@@ -25,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.ulfric.lib.hook.Hooks;
+import com.ulfric.lib.hook.ScriptHook.Script;
 import com.ulfric.lib.plugin.UPlugin;
 import com.vexsoftware.votifier.crypto.RSAIO;
 import com.vexsoftware.votifier.crypto.RSAKeygen;
@@ -124,7 +125,16 @@ public class Votifier extends UPlugin {
 		}
 		catch (Exception ex) { gracefulExit(); }
 
-		this.registerListener(new VoteListener(Hooks.SCRIPT.getScript(config.getString("script"))));
+		Script script = Hooks.SCRIPT.getScript(config.getString("script"));
+
+		if (script == null)
+		{
+			this.warn("Vote listener script not found!");
+
+			return;
+		}
+
+		this.registerListener(new VoteListener(script));
 	}
 
 	@Override

@@ -18,19 +18,14 @@
 
 package com.vexsoftware.votifier;
 
-import java.io.File;
 import java.security.KeyPair;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.ulfric.lib.hook.Hooks;
-import com.ulfric.lib.hook.ScriptHook.Script;
-import com.ulfric.lib.plugin.UPlugin;
-import com.vexsoftware.votifier.crypto.RSAIO;
-import com.vexsoftware.votifier.crypto.RSAKeygen;
-import com.vexsoftware.votifier.listener.VoteListener;
-import com.vexsoftware.votifier.net.VoteReceiver;
+import com.ulfric.lib.api.module.Plugin;
+import com.vexsoftware.votifier.crypto.RSAModule;
+import com.vexsoftware.votifier.model.VoteListenerModule;
+import com.vexsoftware.votifier.model.VoteReceiver;
 
 /**
  * The main Votifier plugin class.
@@ -39,7 +34,7 @@ import com.vexsoftware.votifier.net.VoteReceiver;
  * @author Kramer Campbell
  * @author Adam 'Packet' Edwards
  */
-public class Votifier extends UPlugin {
+public class Votifier extends Plugin {
 
 	/** The Votifier instance. */
 	private static Votifier instance;
@@ -60,6 +55,9 @@ public class Votifier extends UPlugin {
 	public void load()
 	{
 		Votifier.instance = this;
+
+		this.withSubModule(new RSAModule());
+		this.withSubModule(new VoteListenerModule());
 	}
 
 	@Override
@@ -69,76 +67,17 @@ public class Votifier extends UPlugin {
 
 		FileConfiguration config = this.getConfig();
 		config.options().copyDefaults(true);
-		File rsaDirectory = new File(getDataFolder() + "/rsa");
 		this.saveConfig();
 
-		/*
-		 * Use IP address from server.properties as a default for
-		 * configurations. Do not use InetAddress.getLocalHost() as it most
-		 * likely will return the main server address instead of the address
-		 * assigned to the server.
-		 */
-		String hostAddr = Bukkit.getServer().getIp();
-		if (hostAddr == null || hostAddr.length() == 0)
-		{
-			hostAddr = "0.0.0.0";
-		}
-
-		/*
-		 * Create RSA directory and keys if it does not exist; otherwise, read
-		 * keys.
-		 */
-		try
-		{
-			if (!rsaDirectory.exists())
-			{
-				rsaDirectory.mkdir();
-				keyPair = RSAKeygen.generate(2048);
-				RSAIO.save(rsaDirectory, keyPair);
-			}
-			else
-			{
-				keyPair = RSAIO.load(rsaDirectory);
-			}
-		}
-		catch (Exception ex)
-		{
-			this.warn("Error reading configuration file or RSA keys");
-			this.log(ex);
-			gracefulExit();
-			return;
-		}
-
-		// Initialize the receiver.
-		String host = config.getString("host", hostAddr);
-		int port = config.getInt("port", 8192);
 		debug = config.getBoolean("debug", false);
 		if (debug)
 		{
 			this.log("Debug enabled!");
 		}
-
-		try
-		{
-			voteReceiver = new VoteReceiver(this, host, port);
-			voteReceiver.start();
-		}
-		catch (Exception ex) { gracefulExit(); }
-
-		Script script = Hooks.SCRIPT.getScript(config.getString("script"));
-
-		if (script == null)
-		{
-			this.warn("Vote listener script not found!");
-
-			return;
-		}
-
-		this.registerListener(new VoteListener(script));
 	}
 
 	@Override
-	public void annihilate() {
+	public void disable() {
 		// Interrupt the vote receiver.
 		if (voteReceiver != null)
 		{
@@ -148,7 +87,7 @@ public class Votifier extends UPlugin {
 		Votifier.instance = null;
 	}
 
-	private void gracefulExit()
+	public void gracefulExit()
 	{
 		this.warn("Votifier did not initialize properly!");
 	}
@@ -181,6 +120,15 @@ public class Votifier extends UPlugin {
 	}
 
 	/**
+	 * Sets the vote receiver.
+	 *
+	 * @param receiver The vote receiver
+	 */
+	public void setVoteReceiver(VoteReceiver receiver) {
+		this.voteReceiver = receiver;
+	}
+
+	/**
 	 * Gets the keyPair.
 	 * 
 	 * @return The keyPair
@@ -189,9 +137,17 @@ public class Votifier extends UPlugin {
 		return keyPair;
 	}
 
+	/**
+	 * Sets the keyPair.
+	 *
+	 * @param pair The keyPair
+	 */
+	public void setKeyPair(KeyPair pair) {
+		this.keyPair = pair;
+	}
+
 	public boolean isDebug() {
 		return debug;
 	}
-
 
 }

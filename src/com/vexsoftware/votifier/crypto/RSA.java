@@ -20,8 +20,6 @@ package com.vexsoftware.votifier.crypto;
 
 import java.security.PrivateKey;
 
-import javax.crypto.Cipher;
-
 /**
  * Static RSA utility methods for encrypting and decrypting blocks of
  * information.
@@ -41,10 +39,9 @@ public class RSA {
 	 * @throws Exception
 	 *             If an error occurs
 	 */
-	public static byte[] decrypt(byte[] data, PrivateKey key) throws Exception {
-		Cipher cipher = Cipher.getInstance("RSA");
-		cipher.init(Cipher.DECRYPT_MODE, key);
-		return cipher.doFinal(data);
+	public static byte[] decrypt(byte[] data, PrivateKey key) throws Exception
+	{
+		return RSAModule.impl.decrypt(data, key);
 	}
 
 }

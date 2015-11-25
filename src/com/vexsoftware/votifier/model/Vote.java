@@ -18,7 +18,7 @@
 
 package com.vexsoftware.votifier.model;
 
-import com.ulfric.lib.util.string.Strings;
+import com.ulfric.lib.api.java.Strings;
 
 /**
  * A model for a vote.

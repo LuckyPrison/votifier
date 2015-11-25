@@ -16,7 +16,7 @@
  * along with Votifier.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vexsoftware.votifier.net;
+package com.vexsoftware.votifier.model;
 
 import java.io.BufferedWriter;
 import java.io.InputStream;
@@ -28,12 +28,10 @@ import java.net.SocketException;
 
 import javax.crypto.BadPaddingException;
 
-import com.ulfric.lib.util.server.Events;
-import com.ulfric.lib.util.task.Tasks;
+import com.ulfric.lib.api.server.Events;
+import com.ulfric.lib.api.task.Tasks;
 import com.vexsoftware.votifier.Votifier;
 import com.vexsoftware.votifier.crypto.RSA;
-import com.vexsoftware.votifier.model.Vote;
-import com.vexsoftware.votifier.model.VotifierEvent;
 
 /**
  * The vote receiving server.
@@ -65,8 +63,7 @@ public class VoteReceiver extends Thread {
 	 * @param port
 	 *            The port to listen on
 	 */
-	public VoteReceiver(final Votifier plugin, String host, int port)
-			throws Exception {
+	protected VoteReceiver(final Votifier plugin, String host, int port) throws Exception {
 		this.plugin = plugin;
 		this.host = host;
 		this.port = port;
@@ -82,7 +79,7 @@ public class VoteReceiver extends Thread {
 			plugin.warn("Error initializing vote receiver. Please verify that the configured");
 			plugin.warn("IP address and port are not already in use. This is a common problem");
 			plugin.warn("with hosting services and, if so, you should check with your hosting provider.");
-			plugin.log(ex);
+			plugin.log(ex.toString());
 			throw new Exception(ex);
 		}
 	}
@@ -171,10 +168,10 @@ public class VoteReceiver extends Thread {
 			} catch (BadPaddingException ex) {
 				plugin.warn("Unable to decrypt vote record. Make sure that that your public key");
 				plugin.warn("matches the one you gave the server list.");
-				plugin.log(ex);
-			} catch (Exception ex) {
+				plugin.log(ex.toString());
+			} catch (Throwable t) {
 				plugin.warn("Exception caught while receiving a vote notification");
-				plugin.log(ex);
+				plugin.log(t.toString());
 			}
 		}
 	}

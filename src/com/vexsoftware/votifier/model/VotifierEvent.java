@@ -3,7 +3,7 @@ package com.vexsoftware.votifier.model;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.ulfric.lib.util.server.Events;
+import com.ulfric.lib.api.server.Events;
 
 /**
  * {@code VotifierEvent} is a custom Bukkit event class that is sent
@@ -21,7 +21,7 @@ public class VotifierEvent extends Event {
 	 * 
 	 * @param vote vote record
 	 */
-	public VotifierEvent(Vote vote)
+	protected VotifierEvent(Vote vote)
 	{
 		this.vote = vote;
 	}

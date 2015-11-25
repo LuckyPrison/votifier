@@ -21,14 +21,6 @@
       <scope>system</scope>
       <systemPath>${depend.lib}</systemPath>
     </dependency>
-
-	<dependency>
-      <groupId>com.ulfric</groupId>
-      <artifactId>Data</artifactId>
-      <version>latest</version>
-      <scope>system</scope>
-      <systemPath>${depend.data}</systemPath>
-    </dependency>
   </dependencies>
 
 </project>

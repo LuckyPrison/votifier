@@ -1,6 +1,7 @@
 package com.vexsoftware.votifier.model;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -79,7 +80,9 @@ public class VotifierListener implements Listener {
 
 			for (Player lplayer : Bukkit.getOnlinePlayers())
 			{
-				if (this.containsAtLeast(Hooks.DATA.getPlayerDataRecursively(lplayer.getUniqueId(), "vote.service"), min, 3)) continue;
+				Map<String, Long> data = Hooks.DATA.getPlayerDataRecursively(lplayer.getUniqueId(), "vote.service");
+
+				if (this.containsAtLeast(data.values(), min, 3)) continue;
 
 				Locale.send(lplayer, "vote.process", username);
 			}

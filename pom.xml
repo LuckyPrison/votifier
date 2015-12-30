@@ -5,21 +5,20 @@
   <artifactId>Votifier</artifactId>
   <groupId>com.vexsoftware.votifier</groupId>
   <description>Vote management software</description>
+  <version>1.0.0</version>
 
   <parent>
     <groupId>com.ulfric</groupId>
-    <artifactId>usuite</artifactId>
-    <version>latest</version>
-    <relativePath>../pom.xml</relativePath>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>com.ulfric</groupId>
+      <groupId>com.ulfric.lib</groupId>
       <artifactId>Lib</artifactId>
-      <version>latest</version>
-      <scope>system</scope>
-      <systemPath>${depend.lib}</systemPath>
+      <version>1.0.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

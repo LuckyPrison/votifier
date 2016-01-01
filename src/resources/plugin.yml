@@ -14,3 +14,20 @@ website: ${project.website}
 database: false
 description: ${project.description}
 depend: [Lib]
+
+commands:
+  fakevote:
+    usage: /<command> <player> [service]
+    description: Fake-votes for the player
+    permission: votifier.fakevote
+
+permissions:
+  votifier.all:
+    default: op
+    description: Grants access to all votifier commands
+    children:
+      votifier.fakevote: true
+
+  votifier.fakevote:
+    default: false
+    description: Allows access to /fakevote

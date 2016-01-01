@@ -7,6 +7,7 @@ import com.ulfric.lib.api.hook.Hooks;
 import com.ulfric.lib.api.hook.ScriptHook.Script;
 import com.ulfric.lib.api.module.SimpleModule;
 import com.vexsoftware.votifier.Votifier;
+import com.vexsoftware.votifier.model.reward.VoteRewardModule;
 
 public class VoteListenerModule extends SimpleModule {
 
@@ -15,6 +16,10 @@ public class VoteListenerModule extends SimpleModule {
 	public VoteListenerModule()
 	{
 		super("votelistener", "Responsible for handling voting", "blakeman8192, Kramer, and Packet", "1.0.0-REL");
+
+		this.withSubModule(new VoteRewardModule());
+
+		this.addListener(new VotifierListener());
 	}
 
 	@Override
@@ -80,7 +85,7 @@ public class VoteListenerModule extends SimpleModule {
 			return;
 		}
 
-		this.addListener(new VotifierListener(script));
+		this.addListener(new VotifierListener());
 	}
 
 	@Override

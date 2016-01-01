@@ -18,7 +18,10 @@
 
 package com.vexsoftware.votifier.model;
 
+import org.bukkit.entity.Player;
+
 import com.ulfric.lib.api.java.Strings;
+import com.ulfric.lib.api.player.PlayerUtils;
 
 /**
  * A model for a vote.
@@ -122,6 +125,17 @@ public class Vote {
 	 */
 	public String getTimeStamp() {
 		return timeStamp;
+	}
+
+	private Player player;
+	public Player getPlayer()
+	{
+		if (this.player == null)
+		{
+			this.player = PlayerUtils.getOnline(this.username);
+		}
+
+		return this.player;
 	}
 
 }

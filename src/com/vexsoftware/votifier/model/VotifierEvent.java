@@ -1,5 +1,7 @@
 package com.vexsoftware.votifier.model;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -13,15 +15,14 @@ import com.ulfric.lib.api.server.Events;
  * @author frelling
  * @author Adam 'Packet' Edwards
  */
-public class VotifierEvent extends Event {
-
+public class VotifierEvent extends Event implements Cancellable {
 
 	/**
 	 * Constructs a vote event that encapsulated the given vote record.
 	 * 
 	 * @param vote vote record
 	 */
-	protected VotifierEvent(Vote vote)
+	public VotifierEvent(Vote vote)
 	{
 		this.vote = vote;
 	}
@@ -35,14 +36,25 @@ public class VotifierEvent extends Event {
 	 * 
 	 * @return vote record
 	 */
-	public Vote getVote() {
+	public Vote getVote()
+	{
 		return vote;
 	}
+
+	public Player getPlayer()
+	{
+		return this.vote.getPlayer();
+	}
+
+	private boolean cancelled;
+	@Override
+	public boolean isCancelled() { return this.cancelled; }
+	@Override
+	public void setCancelled(boolean cancel) { this.cancelled = cancel; }
 
 	private static final HandlerList HANDLERS = Events.newHandlerList();
 	@Override
 	public HandlerList getHandlers() { return VotifierEvent.HANDLERS; }
 	public static HandlerList getHandlerList() { return VotifierEvent.HANDLERS; }
-
 
 }

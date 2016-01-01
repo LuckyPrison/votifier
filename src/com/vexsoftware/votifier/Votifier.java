@@ -23,6 +23,7 @@ import java.security.KeyPair;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.ulfric.lib.api.module.Plugin;
+import com.vexsoftware.votifier.command.CommandFakevote;
 import com.vexsoftware.votifier.crypto.RSAModule;
 import com.vexsoftware.votifier.model.VoteListenerModule;
 import com.vexsoftware.votifier.model.VoteReceiver;
@@ -58,6 +59,7 @@ public class Votifier extends Plugin {
 
 		this.withSubModule(new RSAModule());
 		this.withSubModule(new VoteListenerModule());
+		this.addCommand("fakevote", new CommandFakevote());
 	}
 
 	@Override

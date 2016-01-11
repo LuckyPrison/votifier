@@ -33,7 +33,7 @@ class VoteReward {
 		{
 			for (Player lplayer : PlayerUtils.getOnlinePlayersExceptFor(player))
 			{
-				if (Hooks.PRISON.countVotes(lplayer) >= 2) continue;
+				if (Hooks.PRISON.countVotes(lplayer.getUniqueId()) >= 2) continue;
 
 				Locale.send(lplayer, this.message, name);
 			}

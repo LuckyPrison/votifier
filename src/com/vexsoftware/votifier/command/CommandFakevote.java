@@ -22,19 +22,28 @@ public class CommandFakevote extends SimpleCommand {
 		this.withArgument("str", ArgStrategy.ENTERED_STRING);
 	}
 
+	private Vote vote;
+
 	@Override
 	public void run()
 	{
 		Player player = (Player) this.getObject("player");
 
-		Vote vote = new Vote();
-		vote.setUsername(player.getName());
-		vote.setAddress(PlayerUtils.getIP(player));
-		vote.setServiceName(Optional.ofNullable((String) this.getObject("str")).orElse("FakeVote"));
-		// TODO - Set this to something
-		vote.setTimeStamp(Strings.BLANK);
+		synchronized(this.vote)
+		{
+			if (this.vote == null)
+			{
+				this.vote = new Vote();
+			}
 
-		Events.call(new VotifierEvent(vote));
+			this.vote.setUsername(player.getName());
+			this.vote.setAddress(PlayerUtils.getIP(player));
+			this.vote.setServiceName(Optional.ofNullable((String) this.getObject("str")).orElse("FakeVote"));
+			// TODO - Set this to something
+			this.vote.setTimeStamp(Strings.BLANK);
+
+			Events.call(new VotifierEvent(this.vote));
+		}
 	}
 
 }

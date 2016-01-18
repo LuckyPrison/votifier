@@ -38,7 +38,7 @@ public class VotifierEvent extends Event implements Cancellable {
 	 */
 	public Vote getVote()
 	{
-		return vote;
+		return this.vote;
 	}
 
 	public Player getPlayer()

@@ -73,13 +73,13 @@ public class VoteReceiver extends Thread {
 
 	private void initialize() throws Exception {
 		try {
-			server = new ServerSocket();
-			server.bind(new InetSocketAddress(host, port));
+			this.server = new ServerSocket();
+			this.server.bind(new InetSocketAddress(this.host, this.port));
 		} catch (Exception ex) {
-			plugin.warn("Error initializing vote receiver. Please verify that the configured");
-			plugin.warn("IP address and port are not already in use. This is a common problem");
-			plugin.warn("with hosting services and, if so, you should check with your hosting provider.");
-			plugin.log(ex.toString());
+			this.plugin.warn("Error initializing vote receiver. Please verify that the configured");
+			this.plugin.warn("IP address and port are not already in use. This is a common problem");
+			this.plugin.warn("with hosting services and, if so, you should check with your hosting provider.");
+			this.plugin.log(ex.toString());
 			throw new Exception(ex);
 		}
 	}
@@ -88,13 +88,13 @@ public class VoteReceiver extends Thread {
 	 * Shuts the vote receiver down cleanly.
 	 */
 	public void shutdown() {
-		running = false;
-		if (server == null)
+		this.running = false;
+		if (this.server == null)
 			return;
 		try {
-			server.close();
+			this.server.close();
 		} catch (Exception ex) {
-			plugin.warn("Unable to shut down vote receiver cleanly.");
+			this.plugin.warn("Unable to shut down vote receiver cleanly.");
 		}
 	}
 
@@ -102,9 +102,9 @@ public class VoteReceiver extends Thread {
 	public void run() {
 
 		// Main loop.
-		while (running) {
+		while (this.running) {
 			try {
-				Socket socket = server.accept();
+				Socket socket = this.server.accept();
 				socket.setSoTimeout(5000); // Don't hang on slow connections.
 				BufferedWriter writer = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
@@ -129,6 +129,9 @@ public class VoteReceiver extends Thread {
 				position += opcode.length() + 1;
 				if (!opcode.equals("VOTE")) {
 					// Something went wrong in RSA.
+					in.close();
+					writer.close();
+					socket.close();
 					throw new Exception("Unable to decode RSA");
 				}
 
@@ -149,8 +152,8 @@ public class VoteReceiver extends Thread {
 				vote.setAddress(address);
 				vote.setTimeStamp(timeStamp);
 
-				if (plugin.isDebug())
-					plugin.debug("Received vote record -> " + vote);
+				if (this.plugin.isDebug())
+					this.plugin.debug("Received vote record -> " + vote);
 
 				// Call event in a synchronized fashion to ensure that the
 				// custom event runs in the
@@ -164,14 +167,14 @@ public class VoteReceiver extends Thread {
 				in.close();
 				socket.close();
 			} catch (SocketException ex) {
-				plugin.warn("Protocol error. Ignoring packet - " + ex.getLocalizedMessage());
+				this.plugin.warn("Protocol error. Ignoring packet - " + ex.getLocalizedMessage());
 			} catch (BadPaddingException ex) {
-				plugin.warn("Unable to decrypt vote record. Make sure that that your public key");
-				plugin.warn("matches the one you gave the server list.");
-				plugin.log(ex.toString());
+				this.plugin.warn("Unable to decrypt vote record. Make sure that that your public key");
+				this.plugin.warn("matches the one you gave the server list.");
+				this.plugin.log(ex.toString());
 			} catch (Throwable t) {
-				plugin.warn("Exception caught while receiving a vote notification");
-				plugin.log(t.toString());
+				this.plugin.warn("Exception caught while receiving a vote notification");
+				this.plugin.log(t.toString());
 			}
 		}
 	}

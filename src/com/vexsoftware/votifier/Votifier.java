@@ -69,14 +69,14 @@ public class Votifier extends Plugin {
 	@Override
 	public void enable() {
 		// Set the plugin version.
-		version = getDescription().getVersion();
+		this.version = getDescription().getVersion();
 
 		FileConfiguration config = this.getConfig();
 		config.options().copyDefaults(true);
 		this.saveConfig();
 
-		debug = config.getBoolean("debug", false);
-		if (debug)
+		this.debug = config.getBoolean("debug", false);
+		if (this.debug)
 		{
 			this.log("Debug enabled!");
 		}
@@ -85,9 +85,9 @@ public class Votifier extends Plugin {
 	@Override
 	public void disable() {
 		// Interrupt the vote receiver.
-		if (voteReceiver != null)
+		if (this.voteReceiver != null)
 		{
-			voteReceiver.shutdown();
+			this.voteReceiver.shutdown();
 		}
 
 		Votifier.instance = null;
@@ -113,7 +113,7 @@ public class Votifier extends Plugin {
 	 * @return The version
 	 */
 	public String getVersion() {
-		return version;
+		return this.version;
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class Votifier extends Plugin {
 	 * @return The vote receiver
 	 */
 	public VoteReceiver getVoteReceiver() {
-		return voteReceiver;
+		return this.voteReceiver;
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class Votifier extends Plugin {
 	 * @return The keyPair
 	 */
 	public KeyPair getKeyPair() {
-		return keyPair;
+		return this.keyPair;
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class Votifier extends Plugin {
 	}
 
 	public boolean isDebug() {
-		return debug;
+		return this.debug;
 	}
 
 }

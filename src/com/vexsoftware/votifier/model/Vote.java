@@ -48,7 +48,7 @@ public class Vote {
 
 	@Override
 	public String toString() {
-		return Strings.format("Vote (from:{0} username:{1} address:{2} time:{3})", serviceName, username, address, timeStamp);
+		return Strings.format("Vote (from:{0} username:{1} address:{2} time:{3})", this.serviceName, this.username, this.address, this.timeStamp);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class Vote {
 	 * @return The serviceName
 	 */
 	public String getServiceName() {
-		return serviceName;
+		return this.serviceName;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class Vote {
 	 * @return The username
 	 */
 	public String getUsername() {
-		return username;
+		return this.username;
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class Vote {
 	 * @return The address
 	 */
 	public String getAddress() {
-		return address;
+		return this.address;
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class Vote {
 	 * @return The time stamp
 	 */
 	public String getTimeStamp() {
-		return timeStamp;
+		return this.timeStamp;
 	}
 
 	private Player player;

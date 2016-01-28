@@ -17,7 +17,7 @@
     <dependency>
       <groupId>com.ulfric.lib</groupId>
       <artifactId>Lib</artifactId>
-      <version>1.0.28</version>
+      <version>1.0.29</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
